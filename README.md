@@ -7,10 +7,10 @@ This is a repository for the Mini Data Analysis (MDA) project which is a part of
 ## What are the files in this repository?
 
 There are a handful of files in this repository which you may be interested in viewing.
-- `Deliverable-1.Rmd`: This is an RMarkdown file which contains the R code for the data analyses and transformations which were carried out as part of this project.
-- `Deliverable-1.md`: This is a GitHub-compatible markdown file which is created by knitting the `Deliverable-1.Rmd` file to markdown. The content of this file matches the content of `Deliverable-1.Rmd`, but it is in a more readable format, and can be read directly on the GitHub website without downloading any files.
-- `README.md`: The file which you are reading at the moment. It is a standard README file, which is useful for orienting yourself with the project and the repository.
-- `Deliverable-1_files/figure-gfm/`: A folder within the Git repository which contains three PNG files. These PNGs are the three plots shown in `Deliverable-1.md`, and GitHub accesses those images via this folder. 
+- [`Deliverable-1.Rmd`](https://github.com/stat545ubc-2023/mda-hotz1/blob/main/Deliverable-1.Rmd): This is an RMarkdown file which contains the R code for the data analyses and transformations which were carried out as part of this project.
+- [`Deliverable-1.md`](https://github.com/stat545ubc-2023/mda-hotz1/blob/main/Deliverable-1.md): This is a GitHub-compatible markdown file which is created by knitting the `Deliverable-1.Rmd` file to markdown. The content of this file matches the content of `Deliverable-1.Rmd`, but it is in a more readable format, and can be read directly on the GitHub website without downloading any files.
+- [`README.md`](https://github.com/stat545ubc-2023/mda-hotz1/blob/main/README.md): The file which you are reading at the moment. It is a standard README file, which is useful for orienting yourself with the project and the repository.
+- [`Deliverable-1_files/figure-gfm/`](https://github.com/stat545ubc-2023/mda-hotz1/tree/main/Deliverable-1_files/figure-gfm/): A folder within the Git repository which contains three PNG files. These PNGs are the three plots shown in `Deliverable-1.md`, and GitHub accesses those images via this folder. 
 
 ## How do I use this repository?
 
