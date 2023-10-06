@@ -486,16 +486,16 @@ variable (column) of the dataset, and create a bar plot in order to get
 a grasp on the distribution of missing values in the data.
 
 ``` r
-# For each dataset, count the number of missing and recorded values per column
+# Count the number of missing and recorded values per column and create a tibble with this data
 apts_missing <- tibble(variable = colnames(apts), 
                        missing = colSums(is.na(apts)), 
                        recorded = colSums(!is.na(apts)))
 
-# For each dataset, use pivot_longer to make the table have only one numeric column
+# Use pivot longer to put all counts in one column (this is required for the plot)
 apts_missing <- apts_missing %>%
   pivot_longer(cols = !variable, names_to = "type", values_to = "count")
 
-# Create a column plot to visualize missing/recorded observations for each variable
+# Create a column plot to visualize counts of missing/recorded observations for each variable
 apts_missing %>% ggplot(aes(x = forcats::fct_rev(variable), y = count, fill = type)) +
   geom_col() +
   theme_bw() +
@@ -506,7 +506,7 @@ apts_missing %>% ggplot(aes(x = forcats::fct_rev(variable), y = count, fill = ty
   coord_flip()
 ```
 
-![](Deliverable-1_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
+![](Deliverable-1_files/figure-gfm/exercise-3-1.png)<!-- -->
 
 Based on the plot above, we see that there are only two variables with
 high proportions of unrecorded values, which are the `amenities` and

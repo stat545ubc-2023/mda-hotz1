@@ -214,17 +214,17 @@ In order to get a better understanding of the `apt_buildings` dataset, it would 
 
 To do this, we can calculate the missing and recorded values for each variable (column) of the dataset, and create a bar plot in order to get a grasp on the distribution of missing values in the data.  
 
-```{r, fig.width = 10, fig.height = 10}
-# For each dataset, count the number of missing and recorded values per column
+```{r exercise-3, fig.width = 10, fig.height = 10}
+# Count the number of missing and recorded values per column and create a tibble with this data
 apts_missing <- tibble(variable = colnames(apts), 
                        missing = colSums(is.na(apts)), 
                        recorded = colSums(!is.na(apts)))
 
-# For each dataset, use pivot_longer to make the table have only one numeric column
+# Use pivot longer to put all counts in one column (this is required for the plot)
 apts_missing <- apts_missing %>%
   pivot_longer(cols = !variable, names_to = "type", values_to = "count")
 
-# Create a column plot to visualize missing/recorded observations for each variable
+# Create a column plot to visualize counts of missing/recorded observations for each variable
 apts_missing %>% ggplot(aes(x = forcats::fct_rev(variable), y = count, fill = type)) +
   geom_col() +
   theme_bw() +
