@@ -106,7 +106,9 @@ parking <- parking_meters
 steam <- steam_games
 ```
 
-First, we will count the number of `numeric` columns and `character` columns in each of the four datasets. A `numeric` column represents that the observation is quantitative in nature and can be represented by a numerical value, whereas a `character` column has its values stored as text, and typically represents a qualitative or categorical variable. This will help us understand the values stored in our datasets
+First, we will count the number of `numeric` columns and `character` columns in each of the four datasets.
+
+A `numeric` column in a dataset indicates that the data corresponding to that variable can be represented by a numerical value, which typically means that it is a quantitative variable. On the other hand, a `character` column has values stored as text, which typically represents that the variable is qualitative or categorical in nature. By finding these counts of columns in our data, we can get a better understanding of the data types which we are likely to encounter in each of the four selected datasets. 
 
 ```{r exploration-1, comment = NA, results = "hold"}
 # Count number of numeric columns per dataset
@@ -123,17 +125,18 @@ steam_character_cols = ncol(select_if(steam, is.character))
 
 # Print each of these values as a sentence (this is mostly for the sake of readability)
 cat(paste("The `apt_buildings` dataset has", apts_numeric_cols, "numeric variables and", 
-          apts_character_cols, "text-based variables.\n"))
+          apts_character_cols, "text-based (character) variables.\n"))
 cat(paste("The `cancer_sample` dataset has", cancer_numeric_cols, "numeric variables and", 
-          cancer_character_cols, "text-based variables.\n"))
+          cancer_character_cols, "text-based (character) variables.\n"))
 cat(paste("The `parking_meters` dataset has", parking_numeric_cols, "numeric variables and", 
-          parking_character_cols, "text-based variables.\n"))
+          parking_character_cols, "text-based (character) variables.\n"))
 cat(paste("The `steam_games` dataset has", steam_numeric_cols, "numeric variables and", 
-          steam_character_cols, "text-based variables.\n"))
+          steam_character_cols, "text-based (character) variables.\n"))
 ```
 
-Next, for each of the four datasets, we will use the `glimpse` function from `dplyr` to look at some of the values stored in each column of the dataset. In addition to showing a snippet of the values in the dataset, this function also displays the column names and the data types for the variables in each of the columns, which lets us get a better feel for the data as a whole, and can help us evaluate how 'tidy' each of these datasets are.
-```{r exploration-2}
+Next, for each of the four datasets, we will use the `glimpse` function from `dplyr` to look at some of the values stored in each column of the dataset. In addition to showing a snippet of the values for each column in the dataset, this function will also display the names and data types of each column, as well as the dimensions of the dataset. The `glimpse` function allows us to get a better feel for the data as a whole, and it can help us evaluate the 'tidiness' of each dataset.
+
+```{r exploration-2, comment = NA}
 # View a glimpse of each of the four datasets
 glimpse(apts)
 glimpse(cancer)
@@ -141,7 +144,7 @@ glimpse(parking)
 glimpse(steam)
 ```
 
-Lastly, we will calculate the proportion of missing values in each of the four datasets. This step will be very helpful in choosing a dataset to analyze further, as it is often easier to work with a dataset with few or no missing entries. 
+Lastly, we will calculate the proportion of missing values in each of the four datasets. This step can be very helpful in choosing a dataset to analyze further, as it is often easier to work with a dataset with few or no missing entries. 
 
 ```{r exploration-3, comment = NA, results = "hold"}
 # Compute proportion of NA values in each dataset
@@ -181,6 +184,12 @@ Additionally, I wanted to work with the `apt_buildings` dataset because the data
 
 <!-------------------------- Start your work below ---------------------------->
 
+The main research question which I would like to tackle in this data analysis project is:
+
+**How have the characteristics of apartment buildings in the City of Toronto changed over time?**
+
+In particular, I would like to examine the relationships between the year that an apartment building was built (`build_year`) and qualities of the apartment building such as the number of stories and units in the building (`no_of_storeys` and `no_of_units`), and the building's amenities (`amenities`) to analyze how newly-built apartments differ from older apartment buildings due to factors such as modern construction techniques and an increased need for medium-density and high-density housing in the city.
+
 <!----------------------------------------------------------------------------->
 
 # Important note
@@ -210,6 +219,8 @@ Make sure that you're using dplyr and ggplot2 rather than base R for this task. 
 
 <!-------------------------- Start your work below ---------------------------->
 
+### Exercise 3:
+
 In order to get a better understanding of the `apt_buildings` dataset, it would be helpful to know how many of the observations in the dataset are missing and how many of them have recorded values. 
 
 To do this, we can calculate the missing and recorded values for each variable (column) of the dataset, and create a bar plot in order to get a grasp on the distribution of missing values in the data.  
@@ -235,9 +246,89 @@ apts_missing %>% ggplot(aes(x = forcats::fct_rev(variable), y = count, fill = ty
   coord_flip()
 ```
 
-Based on the plot above, we see that there are only two variables with high proportions of unrecorded values, which are the `amenities` and `prop_management_company_name` variables. 
+Based on the plot above, we see that there are only two variables with high proportions of unrecorded values (relative to the rest of the dataset), which are the `amenities` and `prop_management_company_name` variables. 
 
-It is likely that a missing value in the `amenities` category is meant to represent that the apartment building does not offer any amenities, as opposed to representing that the data is missing for that building. Similarly, a missing value in the `prop_management_company_name` variable may mean that the building is not managed by a property management company, as opposed to implying that the property management company is simply unknown.
+It is likely that a missing value in the `amenities` category is meant to represent that the apartment building does not have any additional amenities, as opposed to simply representing a missing observation for that apartment building.
+
+Similarly, a missing value in the `prop_management_company_name` variable may mean that the building is not managed by a property management company, as opposed to implying that the property management company is simply unknown.
+
+### Exercise 2: 
+
+As we saw above, the `amenities` variable has a very high proportion of missing values compared to the rest of the `apt_buildings` dataset, and we hypothesize that these unrecorded values are meaningful, as they could represent that there are no amenities in the building, as opposed to the data simply being missing. 
+
+To remedy this, we will create a new numeric variable called `no_of_amenities` (following the dataset's naming convention), which represents the number of amenities in the building. An `NA` value represents that the building has zero amenities, and if a building has multiple amenities, they are listed as one string of text in which each amenity is separated by a comma. Thus, we can count the number of amenities in the building by adding 1 to the number of commas in the `amenities` column.
+
+Additionally, we will make a variable called `decade_built`, which represents the decade when an apartment building was built. This variable will allow us to group apartment buildings together based on a larger range of time than just one year, which will be convenient for plotting our data later.
+
+```{r exercise-2}
+# Create a new variable called "no_of_amenities" representing the number of amenities that the apartment building has.
+apts <- apts %>%
+  mutate(no_of_amenities = if_else(is.na(amenities), 0, 
+                                   stringr::str_count(amenities, ",") + 1))
+
+# Create a new variable called "decade_built" representing the decade when a building was built
+apts <- apts %>%
+  # Divide by 10 to get the decade + a decimal (for example, 196.4)
+  mutate(decade_built = year_built/10) %>% 
+  # Use floor to just get the first three digits of the year (for example, 196)
+  mutate(decade_built = floor(decade_built)) %>%
+  # Multiply by 10 to get the first year of the decade (for example, 1960)
+  mutate(decade_built = 10 * decade_built) %>%
+  # Convert to a string and add an 's' on the end (for example, '1960s')
+  mutate(decade_built = paste0(as.character(decade_built), "s"))
+```
+
+### Exercise 4:
+
+We would like to examine the relationship between the number of stories in an apartment building, the number of units in the building, and the number of amenities which the building has. 
+
+To accomplish this goal in one visualization, we can use a scatter plot to visualize the relationship between two of these variables by putting them on the axes, and we can also include the third variable by having the size of the points in the scatter plot be proportional to the third variable. 
+
+```{r exercise-4, fig.width = 10, fig.height = 10, message = FALSE}
+apts %>% 
+  # There was one massive outlier with over 4000 units, which seems to have been a data entry error
+  # as it was listed at 5x the size of the second-largest building, and seems impossibly large. 
+  filter(no_of_units < 4000) %>% 
+  # Create a scatter plot of stories and units, with point size proportional to amenities
+  ggplot(aes(x = no_of_storeys, y = no_of_units, size = no_of_amenities)) +
+    # Color each point by property type and lower alpha (opacity)
+    geom_point(aes(color = property_type), alpha = 0.15) +
+    scale_color_manual(values = c("#FF9933", "#015E05", "#0047AB")) +
+    theme_bw() +
+    labs(x = "Number of Stories", y = "Number of Units", color = "Property Type", size = "Number of Amenities",
+         title = "Number of stories, units, and amenities in each apartment building in the City of Toronto",
+         subtitle = "Based on a dataset of 3455 apartment buildings from the OpenData Toronto portal") +
+    theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5))
+```
+
+In the plot above, we see that most of the largest apartment buildings (in terms of both units and stories) in the City of Toronto are privately-owned buildings, with a few TCHC (Toronto Community Housing Corporation) buildings among the largest in the city. As we may have expected, there is a very strong linear correlation between the number of stories in a building and the number of units in the building.
+
+It also appears that a majority of the larger buildings in the City of Toronto have some amenities, with a small amount of these buildings not offering any amenities to their residents. 
+
+### Exercise 8:
+
+To visually inspect how the sizes of apartment buildings have changed over time, we can use the `ggridges` package to create ridgeplots for each decade between 1880 and 2020 which display the density of units in apartment buildings which were built in that decade. By putting these ridgeplots together on one large plot, we will be able to see the differences in apartment building sizes in Toronto by decade. 
+
+```{r exercise-8, fig.width = 10, fig.height = 10, message = FALSE}
+apts %>%
+  # Remove any missing observations
+  drop_na(year_built, air_conditioning) %>% 
+  # There was one massive outlier with over 4000 units, which seems to have been a data entry error
+  # as it was listed at 5x the size of the second-largest building, and seems impossibly large.
+  filter(no_of_units < 4000) %>% 
+  # Drop years before 1880 as there is not enough data to make the density ridges 
+  filter(year_built >= 1880) %>%
+  # Create the plot and make it look nice
+  ggplot(aes(x = no_of_units, y = as.factor(decade_built))) +
+    ggridges::geom_density_ridges(alpha = 1/3, fill = "#443399") +
+    theme_bw() +
+    labs(x = "Number of Units", y = "Decade of Construction",
+         title = "Number of units per apartment building in Toronto by decade of building construction from 1880-2020",
+         subtitle = "Based on a dataset of 3455 apartment buildings from the OpenData Toronto portal") +
+    theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5))
+```
+
+Based on the plot above, we see that the distribution of apartment building sizes in Toronto remain quite steady (and slowly grow over time) from the 1880's to the 1950's. Starting in the 1960's, we see a noticeable uptick in the number of newly-constructed apartment buildings with more than 100 units, and this pattern of constructing larger apartment buildings has remained into the 2010's, while the number of units in these these "larger" apartment buildings continues to grow each decade. 
 
 <!----------------------------------------------------------------------------->
 
@@ -246,6 +337,12 @@ It is likely that a missing value in the `amenities` category is meant to repres
 **(4 points)** So far, you have chosen a dataset and gotten familiar with it through exploring the data. You have also brainstormed one research question that interested you (Task 1.4).  Now it's time to pick 4 research questions that you would like to explore in Milestone 2! Write the 4 questions and any additional comments below. 
 
 <!--- *****START HERE***** --->
+
+The four research questions which I would like to explore in more detail in Milestone 2 are:
+1. **As the City of Toronto grows, are new apartment buildings more commonly built in areas which are further from the downtown core? Where are new apartment buildings being built in the City of Toronto?**
+2. **Which features (e.g. accessible entrances, balconies, laundry rooms, underground parking) are more common in recently-built apartment buildings than older buildings? Which features are more common in older buildings?**
+3. **Is there a correlation between the size of a building any the number of amenities offered in the building? Are these values correlated with newer buildings in general?"**
+4. **How do privately-owned apartment buildings differ from the buildings which are owned by the City of Toronto? Are certain features more common in privately-owned buildings than in Social Housing and TCHC buildings?**
 
 <!----------------------------->
 
