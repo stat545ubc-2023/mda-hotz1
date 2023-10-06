@@ -339,10 +339,13 @@ Based on the plot above, we see that the distribution of apartment building size
 <!--- *****START HERE***** --->
 
 The four research questions which I would like to explore in more detail in Milestone 2 are:
-1. **As the City of Toronto grows, are new apartment buildings more commonly built in areas which are further from the downtown core? Where are new apartment buildings being built in the City of Toronto?**
-2. **Which features (e.g. accessible entrances, balconies, laundry rooms, underground parking) are more common in recently-built apartment buildings than older buildings? Which features are more common in older buildings?**
-3. **Is there a correlation between the size of a building any the number of amenities offered in the building? Are these values correlated with newer buildings in general?"**
-4. **How do privately-owned apartment buildings differ from the buildings which are owned by the City of Toronto? Are certain features more common in privately-owned buildings than in Social Housing and TCHC buildings?**
+
+1. As the City of Toronto grows, are new apartment buildings more commonly built in areas which are further from the downtown core? Where are new apartment buildings being built in the City of Toronto?
+2. Which features (e.g. accessible entrances, balconies, laundry rooms, underground parking) are more common in recently-built apartment buildings than older buildings? Which features are more common in older buildings?
+3. Is there a correlation between the size of a building any the number of amenities offered in the building? Are these values correlated with newer buildings in general?"
+4. How do privately-owned apartment buildings differ from the buildings which are owned by the City of Toronto? Are certain features more common in privately-owned buildings than in Social Housing and TCHC buildings?
+
+On top of examining these four questions independently, I am also interested in examining how these questions are connected to one another. For example, if a majority of the newly-built buildings are privately-owned apartment buildings, and newer buildings tend to have more amenities than older buildings, we may find some correlation between privately-owned apartment buildings and buildings with amenities.
 
 <!----------------------------->
 
