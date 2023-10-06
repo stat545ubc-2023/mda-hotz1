@@ -1,6 +1,6 @@
 ---
 title: "Mini Data-Analysis Deliverable 1"
-output: html_document
+output: github_document
 ---
 
 # Welcome to your (maybe) first-ever data analysis project!
@@ -16,7 +16,7 @@ And hopefully the first of many. Let's get started:
 
 2.  Load the packages below.
 
-```{r}
+```{r setup, warning = FALSE, message = FALSE}
 library(datateachr)
 library(tidyverse)
 ```
@@ -84,10 +84,10 @@ And that is exactly the first thing that you will do!
 
 <!-------------------------- Start your work below ---------------------------->
 
-1: CHOICE_1\_HERE\
-2: CHOICE_2\_HERE\
-3: CHOICE_3\_HERE\
-4: CHOICE_4\_HERE
+1: `apt_buildings`\
+2: `cancer_sample`\
+3: `parking_meters`\
+4: `steam_games`\
 
 <!----------------------------------------------------------------------------->
 
@@ -98,8 +98,78 @@ And that is exactly the first thing that you will do!
 <!-------------------------- Start your work below ---------------------------->
 
 ```{r}
-### EXPLORE HERE ###
-steam_games
+# Save each of the four datasets as local variables 
+apts <- apt_buildings
+cancer <- cancer_sample
+parking <- parking_meters
+steam <- steam_games
+```
+
+For each of the four selected datasets which we are going to look into further, we will first look at the total number of missing and recorded (not missing) values per column.
+
+This will give us a better understanding of which columns are likely or unlikely to contain data in each of the datasets, and it will also allow us to have a look at the different variables which are stored in each of the four selected datasets.
+
+```{r, fig.width = 10, fig.height = 10}
+# For each dataset, count the number of missing and recorded values per column
+apts_missing <- tibble(variable = colnames(apts), 
+                       missing = colSums(is.na(apts)), 
+                       recorded = colSums(!is.na(apts)))
+cancer_missing <- tibble(variable = colnames(cancer), 
+                         missing = colSums(is.na(cancer)), 
+                         recorded = colSums(!is.na(cancer)))
+parking_missing <- tibble(variable = colnames(parking), 
+                          missing = colSums(is.na(parking)),
+                          recorded = colSums(!is.na(parking)))
+steam_missing <- tibble(variable = colnames(steam), 
+                        missing = colSums(is.na(steam)), 
+                        recorded = colSums(!is.na(steam)))
+
+# For each dataset, use pivot_longer to make the table have only one numeric column
+apts_missing <- apts_missing %>%
+  pivot_longer(cols = !variable, names_to = "type", values_to = "count")
+cancer_missing <- cancer_missing %>%
+  pivot_longer(cols = !variable, names_to = "type", values_to = "count")
+parking_missing <- parking_missing %>%
+  pivot_longer(cols = !variable, names_to = "type", values_to = "count")
+steam_missing <- steam_missing %>%
+  pivot_longer(cols = !variable, names_to = "type", values_to = "count")
+
+# Create a column plot to visualize missing/recorded observations for each variable
+apts_missing %>% ggplot(aes(x = forcats::fct_rev(variable), y = count, fill = type)) +
+  geom_col() +
+  theme_bw() +
+  labs(x = "Variable Name", y = "Count", fill = "Type of Variable", 
+       title = "Counts of Missing and Recorded Observations in the Apartment Buildings Dataset") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  scale_fill_manual(values = c("#5773CC", "#FFB900")) +
+  coord_flip()
+
+cancer_missing %>% ggplot(aes(x = forcats::fct_rev(variable), y = count, fill = type)) +
+  geom_col() +
+  theme_bw() +
+  labs(x = "Variable Name", y = "Count", fill = "Type of Variable", 
+       title = "Counts of Missing and Recorded Observations in the Cancer Sample Dataset") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  scale_fill_manual(values = c("#5773CC", "#FFB900")) +
+  coord_flip()
+
+parking_missing %>% ggplot(aes(x = forcats::fct_rev(variable), y = count, fill = type)) +
+  geom_col() +
+  theme_bw() +
+  labs(x = "Variable Name", y = "Count", fill = "Type of Variable", 
+       title = "Counts of Missing and Recorded Observations in the Parking Meters Dataset") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  scale_fill_manual(values = c("#5773CC", "#FFB900")) +
+  coord_flip()
+
+steam_missing %>% ggplot(aes(x = forcats::fct_rev(variable), y = count, fill = type)) +
+  geom_col() +
+  theme_bw() +
+  labs(x = "Variable Name", y = "Count", fill = "Type of Variable", 
+       title = "Counts of Missing and Recorded Observations in the Steam Games Dataset") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  scale_fill_manual(values = c("#5773CC", "#FFB900")) +
+  coord_flip()
 ```
 
 <!----------------------------------------------------------------------------->
