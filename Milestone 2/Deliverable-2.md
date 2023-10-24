@@ -69,6 +69,10 @@ Begin by loading your data and the tidyverse package below:
 ``` r
 library(datateachr) # <- might contain the data you picked!
 library(tidyverse)
+library(lubridate)
+
+# Load the dataset
+apts <- datateachr::apt_buildings
 ```
 
 # Task 1: Process and summarize your data
@@ -155,6 +159,165 @@ Make sure it’s clear what research question you are doing each operation
 for!
 
 <!------------------------- Start your work below ----------------------------->
+
+#### Anomalous Data
+
+Before we begin to develop our plots and summaries to answer the four
+questions listed above, we will first do some work to remove and fix a
+few anomalous values in the dataset to ensure that these do not throw
+off our analyses.
+
+``` r
+apts_anomalous <- apts %>%
+  filter(no_of_units > 1000 | ward == "YY") %>%
+  select(id, no_of_units, site_address, ward)
+head(apts_anomalous)
+```
+
+    ## # A tibble: 2 × 4
+    ##      id no_of_units site_address       ward 
+    ##   <dbl>       <dbl> <chr>              <chr>
+    ## 1 12036         369 561  SHERBOURNE ST YY   
+    ## 2 13219        4111 66  ISABELLA ST    13
+
+The anomalous entries in the dataset are shown above. - The first
+building (`id` 12036) has the ward listed as “YY”, which is not a real
+ward in the City of Toronto. Based on [this
+tool](https://www.toronto.ca/city-government/data-research-maps/neighbourhoods-communities/ward-profiles/),
+we find that this building is located in Ward 13. - The second building
+(`id` 13219) supposedly has 4111 units, which is more than five times as
+many units as the second-largest building the dataset. As we do not know
+the true number of units in this building, we will remove this outlier
+from the dataset entirely instead of imputing this value.
+
+``` r
+# Remove the first anomalous observation and fix the ward in the other.
+apts <- apts %>%
+  filter(no_of_units < 4000) %>%
+  mutate(ward = if_else(ward == "YY", "13", ward))
+```
+
+#### Research Question 1
+
+To examine the first question (where are new apartment buildings being
+built in Toronto), we can look at the distribution of the age of
+apartment buildings in Toronto by ward. To do this, we will define a new
+variable called `building_age` which represents the number of years
+since a building was built, and we will then summarize this new variable
+(with the data grouped by the `ward`) to examine which areas of the city
+have older buildings and which areas have many newly-built buildings.
+
+The wards in the City of Toronto are the electoral districts for
+municipal elections, where each ward is represented by a city
+councillor, so the `ward` variable in the dataset is an excellent proxy
+for the area/neighbourhood where an apartment building is located.
+
+``` r
+curr_year = year(today()) # Current year
+
+# Create the building_age variable
+apts <- apts %>%
+  mutate(building_age = curr_year - year_built)
+
+# Summarize age of apartment buildings by ward
+building_age_summary <- apts %>% 
+  # Group by ward
+  group_by(ward) %>% 
+  # Remove missing observations
+  drop_na(building_age) %>%
+  # Calculate summary statistics for the ages of apartment buildings
+  summarise(no_of_buildings = n(),
+            newest_building_age = min(building_age),
+            median_building_age = quantile(building_age, 0.50),
+            oldest_building_age = max(building_age),
+            mean_building_age = mean(building_age),
+            building_age_range = oldest_building_age - newest_building_age)
+
+# Show the summary table created above
+print(building_age_summary)
+```
+
+    # A tibble: 25 × 7
+       ward  no_of_buildings newest_building_age median_building_age
+       <chr>           <int>               <dbl>               <dbl>
+     1 01                 81                  16                56  
+     2 02                130                  12                57.5
+     3 03                240                  11                66  
+     4 04                198                   6                63  
+     5 05                232                   5                63  
+     6 06                236                  18                63  
+     7 07                101                   6                53  
+     8 08                241                   4                65  
+     9 09                 87                   7                64  
+    10 10                 46                  10                36  
+    # ℹ 15 more rows
+    # ℹ 3 more variables: oldest_building_age <dbl>, mean_building_age <dbl>,
+    #   building_age_range <dbl>
+
+As we can see in the table above, there are only 6 wards in Toronto
+which had an apartment building constructed in the last 5 years
+(assuming that the dataset is up to date as of 2023), which are Ward 5,
+Ward 8, Ward 12, Ward 13, Ward 17, and Ward 24. We can also see that
+there is a large discrepancy in the number of apartment buildings per
+ward. For example, Ward 12 has 331 apartment buildings, while Ward 23
+has only 8.
+
+Next, we will create a collection of histograms displaying the
+distribution of apartment building ages by ward.
+
+``` r
+# Create a plot of building age density by ward
+apts %>%
+  # Remove missing observations
+  drop_na(building_age) %>%
+  # Create histograms of building age by ward
+  ggplot(aes(x = building_age)) +
+    geom_histogram(fill = "#F56271", color = "black", bins = 15) +
+    theme_bw() +
+    # Split the histograms by ward
+    facet_wrap(~ward) +
+    # Add a dotted line to each histogram showing the mean building age
+    geom_vline(data = building_age_summary, aes(xintercept = mean_building_age),
+               color = "#0DBC9C", linetype = "dashed") +
+    labs(x = "Apartment Building Age (Years)", y = "Count",
+         title = "Ages of apartment buildings in Toronto by Ward",
+         subtitle = "Based on a dataset of 3455 apartment buildings from the OpenData Toronto portal") +
+    theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5),
+          strip.background = element_rect(fill = "#0DBC9C"))
+```
+
+![](Deliverable-2_files/figure-gfm/exercise1.2-research-q1.2-1.png)<!-- -->
+
+Based on the plots above, we see that the different wards in the City of
+Toronto do have different distributions among the ages of their
+apartment buildings, although most of distributions are rather similar
+overall, as a majority of these histograms are unimodal shapes with a
+mode of approximately 50 years, and the dotted green lines (representing
+the mean age per ward) are also all quite close to thos 50-year mark.
+
+#### Research Question 2
+
+#### Research Question 3
+
+#### Research Question 4
+
+``` r
+# # Create a plot of building age density by ward
+# apts %>%
+#   # Remove missing observations
+#   drop_na(building_age) %>% 
+#   # Turn the ward variable into a factor and reverse the order
+#   mutate(ward = forcats::fct_rev(as.factor(ward))) %>%
+#   # Create the plot and make it look nice
+#   ggplot(aes(x = building_age, y = as.factor(ward))) +
+#     ggridges::geom_density_ridges(alpha = 1/3, fill = "#443399") +
+#     theme_bw() +
+#     labs(x = "Apartment Building Age (Years)", y = "Ward",
+#          title = "Ages of apartment buildings in Toronto by Ward",
+#          subtitle = "Based on a dataset of 3455 apartment buildings from the OpenData Toronto portal") +
+#     theme(plot.title = element_text(hjust = 0.5), plot.subtitle = element_text(hjust = 0.5))
+```
+
 <!----------------------------------------------------------------------------->
 
 ### 1.3 (2 points)
