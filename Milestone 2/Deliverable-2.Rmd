@@ -660,6 +660,11 @@ Take a summary table that you made from Task 1, and write it as a csv file in yo
 
 <!-------------------------- Start your work below ---------------------------->
 
+I will be writing the `building_age_summary` table to a csv file, which I will save locally (and in the Git repository) under the name `building_age_summary.csv`, which will be stored in the `output` sub-folder of the Git repository.
+```{r exercise4.1, comment = NA}
+# Write the file to to the desired location.
+write_csv(building_age_summary, here::here("output/building_age_summary.csv"))
+```
 <!----------------------------------------------------------------------------->
 
 ## 4.2 (3 points)
@@ -669,7 +674,17 @@ Write your model object from Task 3 to an R binary file (an RDS), and load it ag
 -   The same robustness and reproducibility criteria as in 4.1 apply here.
 
 <!-------------------------- Start your work below ---------------------------->
+```{r exercise4.2, comment = NA}
+# Write the model object to disk as an RDS file
+saveRDS(apt_units_lm, here::here("output/apt_units_lm.rds"))
 
+# Read the saved model from disk
+apt_units_lm_new <- readRDS(here::here("output/apt_units_lm.rds"))
+
+# Use broom to compare the original and "new" models
+broom::tidy(apt_units_lm)
+broom::tidy(apt_units_lm_new)
+```
 <!----------------------------------------------------------------------------->
 
 # Overall Reproducibility/Cleanliness/Coherence Checklist 

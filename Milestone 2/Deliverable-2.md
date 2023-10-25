@@ -1226,6 +1226,17 @@ file in your `output` folder. Use the `here::here()` function.
   file, and remake it simply by knitting this Rmd file.
 
 <!-------------------------- Start your work below ---------------------------->
+
+I will be writing the `building_age_summary` table to a csv file, which
+I will save locally (and in the Git repository) under the name
+`building_age_summary.csv`, which will be stored in the `output`
+sub-folder of the Git repository.
+
+``` r
+# Write the file to to the desired location.
+write_csv(building_age_summary, here::here("output/building_age_summary.csv"))
+```
+
 <!----------------------------------------------------------------------------->
 
 ## 4.2 (3 points)
@@ -1237,6 +1248,36 @@ Use the functions `saveRDS()` and `readRDS()`.
 - The same robustness and reproducibility criteria as in 4.1 apply here.
 
 <!-------------------------- Start your work below ---------------------------->
+
+``` r
+# Write the model object to disk as an RDS file
+saveRDS(apt_units_lm, here::here("output/apt_units_lm.rds"))
+
+# Read the saved model from disk
+apt_units_lm_new <- readRDS(here::here("output/apt_units_lm.rds"))
+
+# Use broom to compare the original and "new" models
+broom::tidy(apt_units_lm)
+```
+
+    # A tibble: 3 × 5
+      term                 estimate std.error statistic   p.value
+      <chr>                   <dbl>     <dbl>     <dbl>     <dbl>
+    1 (Intercept)           -102.     12.0        -8.57 1.59e- 17
+    2 I(year_built - 1805)     1.10    0.0774     14.2  1.45e- 44
+    3 no_of_amenities         40.6     1.50       27.1  1.14e-146
+
+``` r
+broom::tidy(apt_units_lm_new)
+```
+
+    # A tibble: 3 × 5
+      term                 estimate std.error statistic   p.value
+      <chr>                   <dbl>     <dbl>     <dbl>     <dbl>
+    1 (Intercept)           -102.     12.0        -8.57 1.59e- 17
+    2 I(year_built - 1805)     1.10    0.0774     14.2  1.45e- 44
+    3 no_of_amenities         40.6     1.50       27.1  1.14e-146
+
 <!----------------------------------------------------------------------------->
 
 # Overall Reproducibility/Cleanliness/Coherence Checklist
